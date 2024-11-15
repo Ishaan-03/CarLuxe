@@ -1,10 +1,15 @@
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
-import express, { Request, Response } from "express";
+import express, { Response, NextFunction } from "express";
 import { asyncHandler } from "../utils/asyncHnadler";
 import { authMiddleware } from "../middlewares/authmiddleware";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { PrismaClient } from "@prisma/client";
+
+// Extend the Request type to include the user property
+interface AuthenticatedRequest extends express.Request {
+  user?: { id: string; email: string };
+}
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -38,8 +43,14 @@ router.post(
   "/addcars",
   authMiddleware,
   upload.array('images', 10), // Limit to 10 images
-  asyncHandler(async (req: Request, res: Response) => {
-    const { title, description, tags, userId } = req.body;
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { title, description, tags } = req.body;
+    const userId = req.user?.id; // Extract userId from the authenticated user
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated.' });
+    }
+
     const imageUrls = req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [];
 
     try {
@@ -49,7 +60,7 @@ router.post(
           description,
           images: imageUrls,
           tags: JSON.parse(tags),
-          user: { connect: { id: userId } },
+          userId: userId, // Use the userId from the JWT token
         },
       });
       res.status(201).json(newCar);
@@ -60,7 +71,7 @@ router.post(
 );
 
 // Route to get all cars of the authenticated user
-router.get("/cars/me", authMiddleware, asyncHandler(async (req: Request, res: Response) => {
+router.get("/cars/me", authMiddleware, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -76,7 +87,7 @@ router.get("/cars/me", authMiddleware, asyncHandler(async (req: Request, res: Re
 }));
 
 // Route to get all cars
-router.get("/cars", authMiddleware, asyncHandler(async (_req: Request, res: Response) => {
+router.get("/cars", authMiddleware, asyncHandler(async (_req: AuthenticatedRequest, res: Response) => {
   const cars = await prisma.car.findMany({
     orderBy: { title: "asc" },
     include: {
@@ -89,11 +100,11 @@ router.get("/cars", authMiddleware, asyncHandler(async (_req: Request, res: Resp
   res.status(200).json(cars);
 }));
 
-
+// Route to search cars
 router.get(
   "/cars/search",
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { keyword } = req.query;
 
     if (!keyword || typeof keyword !== "string") {
@@ -105,23 +116,22 @@ router.get(
         OR: [
           { title: { contains: keyword, mode: "insensitive" } },
           { description: { contains: keyword, mode: "insensitive" } },
-          { tags: { has: keyword } }, 
+          { tags: { has: keyword } },
         ],
       },
-      orderBy: { title: "asc" }, 
+      orderBy: { title: "asc" },
     });
 
     res.status(200).json(cars);
   })
 );
 
-
 // Route to update a car's details
 router.post(
   "/cars/update/:carId",
   authMiddleware,
   upload.array('images', 10),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { carId } = req.params;
     const { title, description, tags } = req.body;
     const userId = req.user?.id;
@@ -162,7 +172,7 @@ router.post(
 router.delete(
   "/cars/delete/:carId",
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { carId } = req.params;
     const userId = req.user?.id;
 

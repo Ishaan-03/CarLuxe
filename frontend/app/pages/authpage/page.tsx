@@ -52,7 +52,7 @@ const Signup = () => {
 
       if (data.token) {
         localStorage.setItem('token', data.token)
-        router.push('/home') 
+        router.push('/pages/newCar') 
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')

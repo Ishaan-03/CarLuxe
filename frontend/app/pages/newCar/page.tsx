@@ -1,38 +1,56 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'  
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import { toast } from "@/hooks/use-toast";
 export default function ProductCreationPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState('')
-  const [images, setImages] = useState<File[]>([]) // Ensure this type is correct
+  const [images, setImages] = useState<File[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
 
-    // Basic validation
     if (!title || !description || images.length === 0) {
-      console.error("Please fill out all fields and upload at least one image.")
+      toast({
+        title: "Validation Error",
+        description: "Please fill out all required fields and upload at least one image.",
+        variant: "destructive",
+      })
+      setIsLoading(false)
+      return
+    }
+
+    if (images.length > 10) {
+      toast({
+        title: "Too Many Images",
+        description: "Please select up to 10 images only.",
+        variant: "destructive",
+      })
+      setIsLoading(false)
       return
     }
 
     const formData = new FormData()
     formData.append('title', title)
     formData.append('description', description)
-    formData.append('tags', JSON.stringify(tags.split(',').map(tag => tag.trim())))
+    if (tags) {
+      formData.append('tags', JSON.stringify(tags.split(',').map(tag => tag.trim())))
+    }
     images.forEach(image => formData.append('images', image))
 
     try {
-      const response = await fetch('http://localhost:4000/addcars', {
+      const response = await fetch(`http://localhost:4000/addcars`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -40,12 +58,24 @@ export default function ProductCreationPage() {
         body: formData
       })
 
-      if (!response.ok) throw new Error('Failed to create car')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to create car')
+      }
 
-      console.log("Car created successfully!")
-      router.push('/pages/allcars') 
+      toast({
+        title: "Success",
+        description: "Car created successfully!",
+      })
+      router.push('/pages/allcars')
     } catch (error) {
-      console.error("Failed to create car. Please try again.", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create car. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -87,7 +117,6 @@ export default function ProductCreationPage() {
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="e.g. sedan, luxury, electric"
-                  required
                 />
               </div>
               <div className="space-y-2">
@@ -95,13 +124,15 @@ export default function ProductCreationPage() {
                 <Input
                   id="images"
                   type="file"
-                  onChange={(e) => setImages(Array.from(e.target.files || []))}
+                  onChange={(e) => setImages(Array.from(e.target.files || []).slice(0, 10))}
                   multiple
                   accept="image/*"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">Create Car</Button>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Creating...' : 'Create Car'}
+              </Button>
             </form>
           </CardContent>
         </Card>

@@ -30,7 +30,11 @@ const upload = (0, multer_1.default)({ storage: storage });
 // Route to add a new car with multiple images
 router.post("/addcars", authmiddleware_1.authMiddleware, upload.array('images', 10), // Limit to 10 images
 (0, asyncHnadler_1.asyncHandler)(async (req, res) => {
-    const { title, description, tags, userId } = req.body;
+    const { title, description, tags } = req.body;
+    const userId = req.user?.id; // Extract userId from the authenticated user
+    if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated.' });
+    }
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
     try {
         const newCar = await prisma.car.create({
@@ -39,7 +43,7 @@ router.post("/addcars", authmiddleware_1.authMiddleware, upload.array('images', 
                 description,
                 images: imageUrls,
                 tags: JSON.parse(tags),
-                user: { connect: { id: userId } },
+                userId: userId, // Use the userId from the JWT token
             },
         });
         res.status(201).json(newCar);
@@ -72,6 +76,7 @@ router.get("/cars", authmiddleware_1.authMiddleware, (0, asyncHnadler_1.asyncHan
     });
     res.status(200).json(cars);
 }));
+// Route to search cars
 router.get("/cars/search", authmiddleware_1.authMiddleware, (0, asyncHnadler_1.asyncHandler)(async (req, res) => {
     const { keyword } = req.query;
     if (!keyword || typeof keyword !== "string") {
