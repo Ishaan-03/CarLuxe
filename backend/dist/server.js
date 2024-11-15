@@ -9,14 +9,15 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const carRoutes_1 = __importDefault(require("./routes/carRoutes"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
-// Handle preflight requests
-app.options('*', (0, cors_1.default)());
-// Express middleware
+const corsOptions = {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
-// Route Handlers
 app.use(authRoutes_1.default);
 app.use(carRoutes_1.default);
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
