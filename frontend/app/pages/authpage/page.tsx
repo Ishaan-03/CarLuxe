@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 interface AuthResponse {
   message: string
   token?: string
-  errors?: any[]
+  errors?: string[]
 }
 
 export default function AuthPage() {
@@ -129,7 +129,7 @@ export default function AuthPage() {
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 {isLogin
-                  ? "Don't have an account? Sign Up"
+                  ? "Don&apos;t have an account? Sign Up"
                   : 'Already have an account? Login'}
               </button>
             </div>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Car, ArrowRight, Check, Search, UserPlus, Key } from 'lucide-react'
+import { Car, ArrowRight, Search, UserPlus, Key } from 'lucide-react'
 
 export default function HomePage() {
   const router = useRouter()
@@ -36,7 +36,7 @@ export default function HomePage() {
               Your Journey to the Perfect Car Starts Here
             </h1>
             <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">
-              Discover a world of automotive excellence. Whether you're buying or selling, 
+              Discover a world of automotive excellence. Whether you&apos;re buying or selling, 
               CarFinder is your trusted partner in the car marketplace.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -74,11 +74,13 @@ export default function HomePage() {
           >
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <img 
-                  src="https://i.pinimg.com/736x/b1/44/7c/b1447cc5f697173d513f3871d450ec80.jpg" 
-                  alt="Find your dream car" 
-                  className="w-full h-[400px] object-cover"
-                />
+                <div className="relative w-full h-[400px]">
+                  <img 
+                    src="https://i.pinimg.com/736x/b1/44/7c/b1447cc5f697173d513f3871d450ec80.jpg" 
+                    alt="Find your dream car"
+                    className='w-full h-full object-cover'
+                  />
+                </div>
               </CardContent>
             </Card>
           </motion.div>
@@ -91,7 +93,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { title: "Extensive Selection", description: "From luxury to economy, find the perfect car that fits your needs and budget." },
-              { title: "Verified Sellers", description: "Our rigorous verification process ensures you're dealing with trusted sellers." },
+              { title: "Verified Sellers", description: "Our rigorous verification process ensures you&apos;re dealing with trusted sellers." },
               { title: "Seamless Experience", description: "User-friendly interface makes buying and selling cars a breeze." }
             ].map((feature, index) => (
               <motion.div

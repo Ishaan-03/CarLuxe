@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Plus, Search, Car, Menu } from 'lucide-react'
 
 interface Car {
@@ -106,7 +106,7 @@ export default function AllCarsPage() {
             Discover Your Dream Car
           </h1>
           <p className="text-xl text-center mb-8 text-gray-600 dark:text-gray-300">
-            "The perfect car is waiting for you. Start your journey here."
+            The perfect car is waiting for you. Start your journey here.
           </p>
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
             <div className="flex w-full md:w-auto mb-4 md:mb-0">
@@ -150,7 +150,11 @@ export default function AllCarsPage() {
                 >
                   <Card className="cursor-pointer hover:shadow-xl transition-shadow duration-300 overflow-hidden" onClick={() => router.push(`/pages/productdetails/${car.id}`)}>
                     <div className="relative h-48">
-                      <img src={car.images[0]} alt={car.title} className="w-full h-full object-cover" />
+                      <img
+                        src={car.images[0]}
+                        alt={car.title}
+                        className="w-full h-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <CardTitle className="absolute bottom-2 left-2 text-white text-xl font-bold">{car.title}</CardTitle>
                     </div>
