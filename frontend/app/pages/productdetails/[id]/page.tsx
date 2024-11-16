@@ -42,7 +42,7 @@ export default function ProductDetailPage() {
   const fetchCarDetails = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:4000/cars/${id}`, {
+      const response = await fetch(`https://carluxe-production.up.railway.app/cars/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -84,7 +84,7 @@ export default function ProductDetailPage() {
     newImages.forEach(image => formData.append('images', image))
 
     try {
-      const response = await fetch(`http://localhost:4000/cars/update/${id}`, {
+      const response = await fetch(`https://carluxe-production.up.railway.app/cars/update/${id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
       setLoading(true)
       setError('')
       try {
-        const response = await fetch(`http://localhost:4000/cars/delete/${id}`, {
+        const response = await fetch(`https://carluxe-production.up.railway.app/cars/delete/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`

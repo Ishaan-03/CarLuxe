@@ -54,7 +54,7 @@ export default function ProductCreationPage() {
     images.forEach(image => formData.append('images', image))
 
     try {
-      const response = await fetch(`http://localhost:4000/addcars`, {
+      const response = await fetch(`https://carluxe-production.up.railway.app/addcars`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

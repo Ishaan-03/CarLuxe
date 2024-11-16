@@ -30,7 +30,7 @@ export default function AllCarsPage() {
   const fetchCars = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:4000/cars`, {
+      const response = await fetch(`https://carluxe-production.up.railway.app/cars`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -48,7 +48,7 @@ export default function AllCarsPage() {
   const handleSearch = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:4000/cars/search?keyword=${searchKeyword}`, {
+      const response = await fetch(`https://carluxe-production.up.railway.app/cars/search?keyword=${searchKeyword}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
