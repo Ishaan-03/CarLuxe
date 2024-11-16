@@ -88,7 +88,7 @@ export default function HomePage() {
 
         <section className="mt-24">
           <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-white">
-            Why Choose CarFinder?
+            Why Choose CarLuxe?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
@@ -127,7 +127,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
               <Car className="h-8 w-8 text-primary mr-2" />
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">CarFinder</span>
+              <span className="text-2xl font-bold text-gray-800 dark:text-white">CarLuxe</span>
             </div>
             <div className="flex space-x-4">
               <Button variant="ghost">About Us</Button>
@@ -136,7 +136,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-8 text-center text-gray-600 dark:text-gray-300">
-            © {new Date().getFullYear()} CarFinder. All rights reserved.
+            © {new Date().getFullYear()} CarLuxe. All rights reserved.
           </div>
         </div>
       </footer>

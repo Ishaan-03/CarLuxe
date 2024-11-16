@@ -36,31 +36,32 @@ export default function ProductDetailPage() {
   const id = params.id as string
 
   useEffect(() => {
-    if (id) fetchCarDetails()
-  }, [id])
+    const fetchCarDetails = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`https://carluxe-production.up.railway.app/cars/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
-  const fetchCarDetails = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch(`https://carluxe-production.up.railway.app/cars/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch car details')
-      const data = await response.json()
-      setCar(data)
-      setTitle(data.title)
-      setDescription(data.description)
-      setTags(data.tags.join(', '))
-    } catch (error) {
-      console.error("Failed to fetch car details. Please try again.", error)
-      setError('Failed to fetch car details')
-    } finally {
-      setLoading(false)
-    }
-  }
+        if (!response.ok) throw new Error('Failed to fetch car details');
 
+        const data = await response.json();
+        setCar(data);
+        setTitle(data.title);
+        setDescription(data.description);
+        setTags(data.tags.join(', '));
+      } catch (error) {
+        console.error('Failed to fetch car details. Please try again.', error);
+        setError('Failed to fetch car details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchCarDetails();
+  }, [id]);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     setNewImages(prevImages => {
@@ -321,4 +322,8 @@ export default function ProductDetailPage() {
       </motion.div>
     </div>
   )
+}
+
+function fetchCarDetails() {
+  throw new Error('Function not implemented.')
 }

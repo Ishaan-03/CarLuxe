@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent,  CardTitle } from "@/components/ui/card"
 import { Plus, Search, Car, Menu, User } from 'lucide-react'
 
 interface Car {
@@ -147,7 +147,7 @@ export default function MyListingsPage() {
                   transition={{ duration: 0.5 }}
                 >
                   <Car className="h-24 w-24 text-primary mx-auto mb-4" />
-                  <p className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">You haven't listed any cars yet.</p>
+                  <p className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">You haven&apos;t listed any cars yet.</p>
                   <Button className="bg-primary hover:bg-primary-dark text-white" onClick={() => router.push('/pages/newCar')}>
                     List Your First Car
                   </Button>
