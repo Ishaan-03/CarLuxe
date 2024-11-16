@@ -16,19 +16,13 @@ interface AuthResponse {
   errors?: any[]
 }
 
-const Signup = () => {
+export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isClient, setIsClient] = useState(false) 
-
-  const router = useRouter() 
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,17 +46,13 @@ const Signup = () => {
 
       if (data.token) {
         localStorage.setItem('token', data.token)
-        router.push('/pages/newCar') 
+        router.push('/pages/allcars')
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
-  }
-
-  if (!isClient) {
-    return null 
   }
 
   return (
@@ -73,8 +63,8 @@ const Signup = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <Card>
-          <CardHeader>
+        <Card className="shadow-lg">
+          <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </CardTitle>
@@ -101,6 +91,7 @@ const Signup = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
               <div className="space-y-2">
@@ -112,11 +103,12 @@ const Signup = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded transition-colors duration-300"
                 disabled={loading}
               >
                 {loading ? (
@@ -147,5 +139,3 @@ const Signup = () => {
     </div>
   )
 }
-
-export default Signup

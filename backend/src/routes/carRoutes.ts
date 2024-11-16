@@ -60,7 +60,7 @@ router.post(
           description,
           images: imageUrls,
           tags: JSON.parse(tags),
-          userId: userId, // Use the userId from the JWT token
+          userId: userId, 
         },
       });
       res.status(201).json(newCar);
@@ -191,6 +191,30 @@ router.delete(
       message: "Car deleted successfully.",
       car: deletedCar,
     });
+  })
+);
+
+// New route to view car details
+router.get(
+  "/cars/:carId",
+  authMiddleware,
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { carId } = req.params;
+
+    const car = await prisma.car.findUnique({
+      where: { id: carId },
+      include: {
+        user: {
+          select: { email: true },
+        },
+      },
+    });
+
+    if (!car) {
+      return res.status(404).json({ message: "Car not found." });
+    }
+
+    res.status(200).json(car);
   })
 );
 

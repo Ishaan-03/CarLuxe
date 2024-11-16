@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Search, Car, Menu } from 'lucide-react'
+import { Plus, Search, Car, Menu, User } from 'lucide-react'
 
 interface Car {
   id: string
@@ -16,7 +16,7 @@ interface Car {
   images: string[]
 }
 
-export default function AllCarsPage() {
+export default function MyListingsPage() {
   const [cars, setCars] = useState<Car[]>([])
   const [searchKeyword, setSearchKeyword] = useState('')
   const [loading, setLoading] = useState(true)
@@ -24,22 +24,22 @@ export default function AllCarsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    fetchCars()
+    fetchMyCars()
   }, [])
 
-  const fetchCars = async () => {
+  const fetchMyCars = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:4000/cars`, {
+      const response = await fetch(`http://localhost:4000/cars/me`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       })
-      if (!response.ok) throw new Error('Failed to fetch cars')
+      if (!response.ok) throw new Error('Failed to fetch your cars')
       const data = await response.json()
       setCars(data)
     } catch (error) {
-      console.error("Failed to fetch cars. Please try again.", error)
+      console.error("Failed to fetch your cars. Please try again.", error)
     } finally {
       setLoading(false)
     }
@@ -55,7 +55,8 @@ export default function AllCarsPage() {
       })
       if (!response.ok) throw new Error('Search failed')
       const data = await response.json()
-      setCars(data)
+      const userCars = data.filter((car: Car) => cars.some(userCar => userCar.id === car.id))
+      setCars(userCars)
     } catch (error) {
       console.error("Search failed. Please try again.", error)
     } finally {
@@ -72,7 +73,7 @@ export default function AllCarsPage() {
             <span className="text-2xl font-bold text-gray-800 dark:text-white">CarLuxe</span>
           </div>
           <div className="hidden md:flex space-x-4">
-            <Button variant="ghost" onClick={() => router.push('/pages/mylistings')}>My Listings</Button>
+            <Button variant="ghost" onClick={() => router.push('/pages/allcars')}>All Cars</Button>
             <Button variant="ghost" onClick={() => router.push('/pages/newCar')}>Add New Car</Button>
           </div>
           <Button variant="ghost" className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
@@ -88,7 +89,7 @@ export default function AllCarsPage() {
               className="md:hidden bg-white dark:bg-gray-800 shadow-md"
             >
               <div className="container mx-auto px-6 py-3 flex flex-col space-y-2">
-                <Button variant="ghost" onClick={() => router.push('/pages/mylistings')}>My Listings</Button>
+                <Button variant="ghost" onClick={() => router.push('/pages/allcars')}>All Cars</Button>
                 <Button variant="ghost" onClick={() => router.push('/pages/newCar')}>Add New Car</Button>
               </div>
             </motion.div>
@@ -102,29 +103,33 @@ export default function AllCarsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-            Discover Your Dream Car
-          </h1>
-          <p className="text-xl text-center mb-8 text-gray-600 dark:text-gray-300">
-            "The perfect car is waiting for you. Start your journey here."
-          </p>
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <div className="flex w-full md:w-auto mb-4 md:mb-0">
-              <Input
-                type="text"
-                placeholder="Search cars..."
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                className="w-full md:w-64 mr-2"
-              />
-              <Button onClick={handleSearch}>
-                <Search className="mr-2 h-4 w-4" /> Search
-              </Button>
-            </div>
-            <Button onClick={() => router.push('/pages/newCar')} className="w-full md:w-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white flex items-center">
+              <User className="mr-2 h-8 w-8" />
+              My Listed Cars
+            </h1>
+            <Button onClick={() => router.push('/pages/newCar')} className="bg-primary hover:bg-primary-dark text-white">
               <Plus className="mr-2 h-4 w-4" /> Add New Car
             </Button>
           </div>
+
+          <Card className="mb-8 bg-white dark:bg-gray-800 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex flex-col md:flex-row justify-between items-center">
+                <Input
+                  type="text"
+                  placeholder="Search your cars..."
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  className="w-full md:w-64 mb-4 md:mb-0"
+                />
+                <Button onClick={handleSearch} className="w-full md:w-auto">
+                  <Search className="mr-2 h-4 w-4" /> Search
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <motion.div
@@ -134,12 +139,21 @@ export default function AllCarsPage() {
               />
             </div>
           ) : cars.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-2xl text-gray-600 dark:text-gray-300">No cars found.</p>
-              <Button className="mt-4" onClick={() => router.push('/pages/newCar')}>
-                Be the first to add a car
-              </Button>
-            </div>
+            <Card className="text-center py-16 bg-white dark:bg-gray-800 shadow-lg">
+              <CardContent>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Car className="h-24 w-24 text-primary mx-auto mb-4" />
+                  <p className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">You haven't listed any cars yet.</p>
+                  <Button className="bg-primary hover:bg-primary-dark text-white" onClick={() => router.push('/pages/newCar')}>
+                    List Your First Car
+                  </Button>
+                </motion.div>
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {cars.map((car) => (
@@ -148,7 +162,7 @@ export default function AllCarsPage() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Card className="cursor-pointer hover:shadow-xl transition-shadow duration-300 overflow-hidden" onClick={() => router.push(`/pages/productdetails/${car.id}`)}>
+                  <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800" onClick={() => router.push(`/pages/productdetails/${car.id}`)}>
                     <div className="relative h-48">
                       <img src={car.images[0]} alt={car.title} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
